@@ -14,7 +14,7 @@ worker_processes  2;
 # Nginx 主进程的 PID 文件路径
 pid /var/run/nginx.pid;
 
-# 错误日志文件路径和日志级别
+# 错误日志文件路径和日志级别 [ debug | info | notice | warn | error | crit ]
 error_log  /var/log/nginx.error_log  info;
 
 # events 模块配置，指定事件驱动模型和最大连接数
