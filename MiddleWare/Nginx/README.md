@@ -1,4 +1,4 @@
-# Nginx动态缓存与过滤
+# 原理：Nginx动态缓存与过滤
 
 软件负载均衡位于系统的入口，流入分布式系统的请求都会经过这里，换句话说，相对整个系统而言，软件负载均衡是离客户端更近的地方，所以可以将一些不经常变化的数据放到这里作为缓存，降低用户请求访问应用服务器的频率。例如一些用户的基本信息，修改频率就不是很高，并且使用比较频繁，这些信息就可以放到缓存服务器 `Redis` 中，当用户请求这部分信息时通过软件负载均衡器直接返回给用户，这样就省去了调用应用服务器的环节，从而能够更快地响应用户。
 
@@ -92,3 +92,179 @@ location ~ ^/userid(\d+)$ {
 ```
 
 动态缓存方式除了缓存用户信息，还能起到过滤功效，可以过滤一些不满足条件的用户。注意，这里提到的用户信息的过滤和缓存只是一个例子。主要想表达的意思是可以将一些变化不频繁的数据提到代理层来缓存，提高响应效率，同时可以根据风控系统返回的信息，过滤疑似机器人的代码或者恶意请求，例如从固定`IP`发送来的、频率过高的请求。特别在秒杀场景中代理层可以识别来自秒杀系统的请求，如果请求中带有秒杀系统的参数，就要把此请求路由至秒杀系统的服务器集群，这样才能将其和正常的业务请求分割开。
+
+# 实践：利用OpenResty实现Nginx动态缓存与过滤
+
+> 实现Nginx动态缓存与过滤有两种方式
+>
+> 1. 将`ngx_http_lua_module`源码添加到nginx源码并重新编译以获取对`lua`语言的支持（本文不做介绍）
+> 2. 利用`OpenResty`支持`lua`语言，[官网](https://openresty.org/cn/) 
+
+## 安装OpenResty
+
+参见[官网](https://openresty.org/cn/installation.html)
+
+## 快速开始
+
+参见[官网](https://openresty.org/cn/getting-started.html)
+
+## redis示例
+
+参见[官网](https://openresty.org/cn/dynamic-routing-based-on-redis.html)
+
+## 原理部分示例
+
+目录结构
+
+```bash
+jiuyou2020@jiuyou2020:/home/code/Java/MiddleWare/Nginx/OpenResty$ tree
+.
+├── client_body_temp
+├── conf
+│   ├── nginx.conf
+│   └── quick-start-nginx.conf
+├── fastcgi_temp
+├── logs
+│   ├── access.log
+│   ├── error.log
+│   └── nginx.pid
+├── lua
+│   └── dynamicCaching.lua
+├── proxy_temp
+├── scgi_temp
+└── uwsgi_temp
+
+8 directories, 6 files
+```
+
+新建`dynamicCaching.lua`文件
+
+```lua
+local redis = require("resty.redis")
+local cjson = require("cjson")
+
+local function close_redis(red)
+    ngx.log(ngx.INFO,"Start to close redis-connection...")
+    if not red then
+        return
+    end
+    
+    -- connection pool:对于有大量并发连接的数据库,不建议将keepalive设置为0(即不使用连接池)
+    local ok, err = red:set_keepalive(10000, 100)
+    if not ok then
+        ngx.log(ngx.ERR, "failed to set_keepalive: ", err)
+    end
+    ngx.log(ngx.INFO,"succeeded to close redis...")
+end
+
+local function get_redis(userId)
+    ngx.log(ngx.INFO,"Start to get redis-connection,userId为: ",userId)
+    local red = redis:new()
+    red:set_timeout(2000)
+    local ok, err = red:connect("127.0.0.1", 6379)
+    if not ok then
+        ngx.log(ngx.ERR, "failed to connect: ", err)
+        return nil
+    end
+    local response, err = red:get(userId)
+    if not response or response == ngx.null then
+        ngx.log(ngx.INFO,"response is null...")
+        response = nil
+    end
+    ngx.log(ngx.INFO,"response: ",response)
+
+    close_redis(red)
+    
+    return response
+end
+
+-- 假设的 get_http 函数
+local function get_http(userId)
+    -- 这里应该有HTTP请求到后端服务器的逻辑
+end
+
+local userId = ngx.var.userId -- 常见的获取userId的方式是通过query参数
+local content = get_redis(userId)
+if content then
+    ngx.say(content) -- content存在，直接返回内容
+    ngx.exit(ngx.HTTP_OK)
+else
+    ngx.say(content)
+    -- 如果get_http不能提供备选内容，则返回默认消息并发送404状态码
+    content = "没有内容哦~404" 
+    ngx.say(content)
+    ngx.exit(ngx.HTTP_NOT_FOUND)
+end
+```
+
+向redis添加一条测试数据
+
+```shell
+redis-cli
+set 123 "Hello World"
+```
+
+编写nginx.conf
+
+```nginx
+worker_processes  1;
+# 设置日志级别debug，默认为Error
+error_log logs/error.log debug;
+events {
+    worker_connections 1024;
+}
+http {
+    server {
+        listen 8081;
+        # 匹配 http://localhost:8081/userid/123
+        location ~ ^/userid/(\d+)$ {
+            default_type 'text/html';
+            charset utf-8;
+            lua_code_cache on;
+            set $userId $1;
+            # 设置lua文件位置
+            content_by_lua_file /home/code/Java/MiddleWare/Nginx/OpenResty/lua/dynamicCaching.lua;
+        }
+        #如果没有匹配上面一条规则，将匹配这一个
+        location / {
+            default_type text/html;
+            content_by_lua_block {
+                ngx.say("<p>hello, world</p>")
+            }
+        }
+    }
+}
+```
+
+启动`nginx`,在`/home/code/Java/MiddleWare/Nginx/OpenResty`目录下（你的OpenResty工作目录）
+
+```bash
+nginx -p `pwd`/ -c conf/nginx.conf
+```
+
+访问http://localhost:8081/userid/123，终端与logs/error.log输出如下
+
+```shell
+# 终端
+jiuyou2020@jiuyou2020:/home/code/Java/MiddleWare/Nginx/OpenResty$ curl http://localhost:8081/userid/123
+Hello World
+jiuyou2020@jiuyou2020:/home/code/Java/MiddleWare/Nginx/OpenResty$ curl http://localhost:8081/userid/1
+nil
+没有内容哦~404
+```
+
+```java
+# log日志
+2024/04/11 20:12:15 [info] 21769#21769: *5 [lua] dynamicCaching.lua:19: get_redis(): Start to get redis-connection,userId为: 123, client: 127.0.0.1, server: , request: "GET /userid/123 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:15 [info] 21769#21769: *5 [lua] dynamicCaching.lua:32: get_redis(): response: Hello World, client: 127.0.0.1, server: , request: "GET /userid/123 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:15 [info] 21769#21769: *5 [lua] dynamicCaching.lua:5: close_redis(): Start to close redis-connection..., client: 127.0.0.1, server: , request: "GET /userid/123 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:15 [info] 21769#21769: *5 [lua] dynamicCaching.lua:15: close_redis(): succeeded to close redis..., client: 127.0.0.1, server: , request: "GET /userid/123 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:15 [info] 21769#21769: *5 client 127.0.0.1 closed keepalive connection
+2024/04/11 20:12:19 [info] 21769#21769: *7 [lua] dynamicCaching.lua:19: get_redis(): Start to get redis-connection,userId为: 1, client: 127.0.0.1, server: , request: "GET /userid/1 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:19 [info] 21769#21769: *7 [lua] dynamicCaching.lua:29: get_redis(): response is null..., client: 127.0.0.1, server: , request: "GET /userid/1 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:19 [info] 21769#21769: *7 [lua] dynamicCaching.lua:32: get_redis(): response: nil, client: 127.0.0.1, server: , request: "GET /userid/1 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:19 [info] 21769#21769: *7 [lua] dynamicCaching.lua:5: close_redis(): Start to close redis-connection..., client: 127.0.0.1, server: , request: "GET /userid/1 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:19 [info] 21769#21769: *7 [lua] dynamicCaching.lua:15: close_redis(): succeeded to close redis..., client: 127.0.0.1, server: , request: "GET /userid/1 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:19 [error] 21769#21769: *7 attempt to set status 404 via ngx.exit after sending out the response status 200, client: 127.0.0.1, server: , request: "GET /userid/1 HTTP/1.1", host: "localhost:8081"
+2024/04/11 20:12:19 [info] 21769#21769: *7 client 127.0.0.1 closed keepalive connection
+```
