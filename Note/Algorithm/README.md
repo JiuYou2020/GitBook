@@ -13,7 +13,7 @@ description: 排序算法
 > * 桶排序（Bucket Sort）
 > * 基数排序（Radix Sort）
 
-冒泡排序算法实现
+## 冒泡排序算法实现
 
 ```java
 public void bubbleSort(int[] nums) {
@@ -47,7 +47,7 @@ public void bubbleSort(int[] nums) {
 }
 ```
 
-选择排序算法实现
+## 选择排序算法实现
 
 ```java
 public void selectionSort(int[] nums) {
@@ -78,7 +78,7 @@ public void selectionSort(int[] nums) {
 }
 ```
 
-插入排序算法实现
+## 插入排序算法实现
 
 ```java
 public int[] sortArray(int[] nums) {
@@ -109,7 +109,7 @@ private void swap(int[] nums, int i, int j) {
 }
 ```
 
-希尔排序算法实现
+## 希尔排序算法实现
 
 ```java
 public void shellSort(int[] nums) {
@@ -138,7 +138,7 @@ public void shellSort(int[] nums) {
 }
 ```
 
-归并排序算法实现
+## 归并排序算法实现
 
 ```java
 //分治算法-归并排序,带注释
@@ -198,3 +198,102 @@ private void merge(int[] nums, int left, int mid, int right, int[] temp) {
     }
 }
 ```
+
+## 快速排序算法实现
+
+```java
+public void quickSort(int[] nums) {
+    if (nums == null || nums.length == 0) {
+        return;
+    }
+    quickSort(nums, 0, nums.length - 1);
+}
+
+private void quickSort(int[] nums, int left, int right) {
+    if (left < right) {
+        // 划分数组，返回分界点的索引
+        int pivotIndex = partition(nums, left, right);
+        // 对分界点左边的子数组进行快速排序
+        quickSort(nums, left, pivotIndex - 1);
+        // 对分界点右边的子数组进行快速排序
+        quickSort(nums, pivotIndex + 1, right);
+    }
+}
+
+private int partition(int[] nums, int left, int right) {
+    // 选择最后一个元素作为基准元素
+    int pivot = nums[right];
+    int i = left - 1; // i 是小于等于基准元素的区域的右边界
+    // 遍历区间 [left, right-1]
+    for (int j = left; j < right; j++) {
+        // 如果当前元素小于等于基准元素，则将其交换到小于等于基准元素的区域
+        if (nums[j] <= pivot) {
+            i++;
+            swap(nums, i, j);
+        }
+    }
+    // 将基准元素交换到正确的位置
+    swap(nums, i + 1, right);
+    // 返回基准元素的最终位置
+    return i + 1;
+}
+
+private void swap(int[] nums, int i, int j) {
+    int temp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = temp;
+}
+
+public static void main(String[] args) {
+    int[] nums = {5, 3, 8, 6, 2, 7, 1, 4};
+    Solution sorter = new Solution();
+    sorter.quickSort(nums);
+    System.out.println("Sorted array: " + Arrays.toString(nums));
+}
+```
+
+## 堆排序算法实现
+
+```java
+public int[] sortArray(int[] nums) {
+    //堆排序，不使用PriorityQueue
+    //1.建立大顶堆
+    for (int i = nums.length / 2 - 1; i >= 0; i--) {
+        adjustHeap(nums, i, nums.length);
+    }
+    //2.交换堆顶元素和末尾元素，重新调整大顶堆
+    for (int i = nums.length - 1; i > 0; i--) {
+        swap(nums, 0, i);
+        adjustHeap(nums, 0, i);
+    }
+    return nums;
+}
+
+private void adjustHeap(int[] nums, int i, int length) {
+    int temp = nums[i];
+    //从i结点的左子结点开始，也就是2i+1处开始
+    for (int k = 2 * i + 1; k < length; k = 2 * k + 1) {
+        //如果左子结点小于右子结点，k指向右子结点
+        if (k + 1 < length && nums[k] < nums[k + 1]) {
+            k++;
+        }
+        //如果子节点大于父节点，将子节点值赋给父节点（不用进行交换）
+        if (nums[k] > temp) {
+            nums[i] = nums[k];
+            i = k;
+        } else {
+            break;
+        }
+    }
+    //将temp值放到最终的位置
+    nums[i] = temp;
+}
+
+private void swap(int[] nums, int i, int j) {
+    int temp = nums[j];
+    nums[j] = nums[i];
+    nums[i] = temp;
+
+}
+```
+
