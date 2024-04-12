@@ -14,3 +14,4 @@ description: 与java相关的一些优秀文章
 
 [wait/notify机制详解](https://juejin.cn/post/6844903520437551111)
 
+[redis三种集群模式](https://zhuanlan.zhihu.com/p/680612053)
