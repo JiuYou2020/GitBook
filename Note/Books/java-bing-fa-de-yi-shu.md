@@ -18,19 +18,19 @@ Java中的每一个对象都可以作为锁。具体表现为以下3种形式。
 
 monitorenter指令是在编译后插入到同步代码块的开始位置，而monitorexit是插入到方法结束处和异常处，JVM要保证每个monitorenter必须有对应的monitorexit与之配对。任何对象都有一个monitor与之关联，当且一个monitor被持有后，它将处于锁定状态。线程执行到monitorenter指令时，将会尝试获取对象所对应的monitor的所有权，即尝试获得对象的锁。
 
-<figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (3).png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 ### **Java对象头**
 
 synchronized用的锁是存在Java对象头里的。如果对象是数组类型，则虚拟机用3个字宽 （Word）存储对象头，如果对象是非数组类型，则用2字宽存储对象头。在32位虚拟机中，1字宽 等于4字节，即32bit。
 
-<figure><img src=".gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
 Java对象头里的Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。
 
-<figure><img src=".gitbook/assets/image (3).png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (3) (1).png" alt=""><figcaption></figcaption></figure>
 
 在运行期间，Mark Word里存储的数据会随着锁标志位的变化而变化。
 
@@ -74,9 +74,57 @@ HotSpot \[1]的作者经过研究发现，大多数情况下，锁不仅不存�
 
 <figure><img src=".gitbook/assets/image (8).png" alt=""><figcaption></figcaption></figure>
 
+## 关于volatile你应该知道的事
+
+> 在最新的Java语言规范中这样定义volatile：
+>
+> The Java programming language allows threads to access shared variables ([§17.1](https://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.1)). As a rule, to ensure that shared variables are consistently and reliably updated, a thread should ensure that it has exclusive use of such variables by obtaining a lock that, conventionally, enforces mutual exclusion for those shared variables.
+>
+> The Java programming language provides a second mechanism, `volatile` fields, that is more convenient than locking for some purposes.
+>
+> A field may be declared `volatile`, in which case the Java Memory Model ensures that all threads see a consistent value for the variable ([§17.4](https://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.4)).
+>
+> 翻译后：
+>
+> Java编程语言允许线程访问共享变量。通常，为了确保共享变量得到一致和可靠的更新，线程应该通过获得一个锁来确保它对这些共享变量具有独占使用权，该锁通常会强制执行这些共享变量的互斥。
+>
+> Java编程语言提供了第二种机制，即易失性字段，它在某些方面比锁定更方便。
+>
+> 字段可以被声明为volatile，在这种情况下，Java内存模型确保所有线程都能看到变量的一致值。
+
+### 缓存一致性
+
+在了解volatile实现原理之前，我们先来看下与其实现原理相关的CPU术语与说明。表2-1 是CPU术语的定义。
+
+<figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
+volatile是如何来保证可见性的呢？让我们在X86处理器下通过工具获取JIT编译器生成的汇编指令来查看对volatile进行写操作时CPU会做什么事情。
+
+Java代码如下：
+
+<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+
+转变为汇编代码，如下：
+
+<figure><img src=".gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+
+有volatile变量修饰的共享变量进行写操作的时候会多出第二行汇编代码，通过查IA-32架构软件开发者手册可知，Lock前缀的指令在多核处理器下会引发了两件事情\[1]。
+
+1. **将当前处理器缓存行的数据写回到系统内存**。
+2. **这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效**。
+
+为了提高处理速度，处理器不直接和内存进行通信，而是先将系统内存的数据读到内部缓存（L1，L2或其他）后再进行操作，但操作完不知道何时会写到内存。如果对声明了volatile的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存。但是，就算写回到内存，如果其他处理器缓存的值还是旧的，再执行计算操作就会有问题。所以，在多处理器下，为了保证各个处理器的缓存是一致的，就会实现缓存一致性协议，每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里。
+
+### 指令重排序
+
+关于 `volatile` 防止指令重排序的情况，这是因为它为变量引入了一种被称作 "内存屏障" 或 "内存栅栏" 的机制：\
 
 
+1. **写内存屏障（Write Barrier）**：当一个变量被声明为 `volatile` 并且对它进行写操作时，内存屏障确保了这个写操作之前的所有操作（在当前线程中）都不会被重排序到写操作之后。
+2. **读内存屏障（Read Barrier）**：类似地，当进行 `volatile` 变量的读操作时，内存屏障确保了这个读操作之后的所有操作（在当前线程中）都不会被重排序到读操作之前。
 
+\
+这样一来，`volatile` 所提供的 "happens-before" 关系就保证了在一个线程中的写操作在另一个线程读取同一个 `volatile` 变量后是可见的，而且这之间的操作不会发生乱序。简而言之，它确保了对 volatile 变量的读写操作在所有处理器中都具有一致性，并且在一个处理器内部保证了不会发生乱序执行，从而提高了多线程程序的可靠性。
 
 
 
