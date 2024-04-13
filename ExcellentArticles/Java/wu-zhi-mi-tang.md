@@ -211,3 +211,64 @@ Java 中导致饥饿的原因：
 * 饿汉式单例模式的写法：线程安全
 * 懒汉式单例模式的写法：非线程安全
 * 双检锁单例模式的写法：线程安全
+
+
+
+### synchronized的实现原理与应用
+
+参考链接：
+
+https://app.gitbook.com/o/kCU9nigbAxy9O5ghLetb/s/4nPAqAgKpdmjLNSFVzrX/java-bing-fa-de-yi-shu#synchronized-de-shi-xian-yuan-li-yu-ying-yong
+
+
+
+### 同步方法和同步块，哪个是更好的选择
+
+同步块是更好的选择，因为它不会锁住整个对象（当然你也可以让它锁住整个对象）。同步方法会锁住整个对象，哪怕这个类中有多个不相关联的同步块，这通常会导致他们停止执行并需要等待获得这个对象上的锁。
+
+同步块更要符合开放调用的原则，只在需要锁住的代码块锁住相应的对象，这样从侧面来说也可以避免死锁。
+
+
+
+### 关于volatile你应该知道的事
+
+参考链接：
+
+https://app.gitbook.com/o/kCU9nigbAxy9O5ghLetb/s/4nPAqAgKpdmjLNSFVzrX/java-bing-fa-de-yi-shu#huan-cun-yi-zhi-xing
+
+
+
+### 可以创建 `volatile` 数组吗?
+
+结论：使用 `volatile` 修饰数组或对象引用可以确保对引用的写入操作对其他线程是可见的，但并不能保证引用指向的对象或数组内部的状态的可见性和一致性。如果需要保证数组或对象内部的状态在多线程环境中的可见性和一致性，需要考虑使用其他并发工具或技术，例如锁（`synchronized`）、并发集合类（如 `ConcurrentHashMap`、`CopyOnWriteArrayList` 等）、`Atomic` 类等
+
+Java 中可以创建 `volatile` 类型数组，不过只是一个指向数组的引用，而不是整个数组。如果改变引用指向的数组（即将该引用指向一个新数组），将会受到 `volatile` 的保护，但是如果多个线程同时改变数组的元素，`volatile` 标示符就不能起到之前的保护作用了。
+
+同理，对于 Java POJO 类，使用 `volatile` 修饰，只能保证这个引用的可见性，不能保证其内部的属性。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
