@@ -129,7 +129,11 @@ description: My honey, your poison!
    * 当向一个桶中添加元素时，如果该桶中链表长度达到阈值（默认为8），会将链表转换为红黑树，提高查找效率。
 5.  **扩容：** 如果添加元素后 `HashMap` 中的元素数量达到数组容量的阈值（负载因子，默认为0.75），会触发扩容操作。扩容会将数组容量增加一倍，并重新计算每个键值对的存放位置。
 
-    <figure><img src=".gitbook/assets/image.png" alt=""><figcaption><p>索引计算</p></figcaption></figure>
+    ```java
+    int index = hash(key) & (newCapacity - 1);
+    ```
+    
+    
 
 
 
@@ -200,7 +204,15 @@ Java 中导致饥饿的原因：
 
 处于等待状态的线程可能会收到错误警报和伪唤醒，如果不在循环中检查等待条件，程序就会在没有满足结束条件的情况下退出。
 
-<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+```java
+// The standard idiom for using the wait method
+synchronized (obj) {
+    while (condition does not hold) {
+        obj.wait(); // (Releases lock, and reacquires on wakeup)
+    }
+    ... // Perform action appropriate to condition
+}
+```
 
 ### sleep(0) 有什么用途？
 
