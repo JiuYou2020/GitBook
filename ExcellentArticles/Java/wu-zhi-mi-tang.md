@@ -173,7 +173,7 @@ Java 中导致饥饿的原因：
 
 ### 线程的五状态与七状态模型
 
-![Thread 的线程状态](http://static.iocoder.cn/5eeec5f68f4fc412246efd4111d6fdec)
+![Thread 的线程状态](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/5eeec5f68f4fc412246efd4111d6fdec.png)
 
 ### 创建线程的方式
 
@@ -340,7 +340,7 @@ Java 中可以创建 `volatile` 类型数组，不过只是一个指向数组的
 
 它提供了与synchronized关键字类似的同步功能，只是在使用时需要显式地获取和释放锁。虽然它缺少了（通过synchronized块或者方法所提供的）隐式获取释放锁的便捷性，但是却拥有了锁获取与释放的可操作性、可中断的获取锁以及超时获取锁等多种synchronized关键字所不具备的同步特性。
 
-![image-20240415210310266](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/image-20240415210310266.png)
+![image-20240415210310266](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/image-20240415210310266.png)
 
 
 
@@ -352,13 +352,13 @@ Java 中可以创建 `volatile` 类型数组，不过只是一个指向数组的
 
 FIFO队列示意图：
 
-![image-20240415213756194](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/image-20240415213756194.png)
+![image-20240415213756194](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/image-20240415213756194.png)
 
 
 
 独占式获取同步状态示意图：
 
-![image-20240415213824758](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/image-20240415213824758.png)
+![image-20240415213824758](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/image-20240415213824758.png)
 
 
 
