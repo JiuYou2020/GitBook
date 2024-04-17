@@ -385,7 +385,11 @@ https://weread.qq.com/web/reader/a1b42863643425f316430426755426757427657366e6136
     - ReentrantLock 通过CAS、AQS（AbstractQueuedSynchronizer）实现同步。
   - 可见性实现机制不同,即不同线程对同一代码块中共享变量的可见性。
     - `synchronized` 依赖 JMM保证共享变量的多线程内存可见性。
+      - ps：synchronize关键字是通过`happens before`规则来保证内存可见性的。当线程释放锁时，JMM会将本地内存中共享变量刷新到共享内存；获取锁时，会使本地内存中的共享变量无效化。
     - ReentrantLock 通过 AQS 的 `volatile state` 保证共享变量的多线程内存可见性。
+      - ps：例如在公平锁中，释放锁时会写`volatile`变量state；在获取锁时会读state。而根据`volatile`的`happens before`规则，释放锁的线程写state变量之前的共享变量，在获取锁的线程读取同一个state变量后会立即变得对获取锁的线程可见。本质上也是`happens before`规则。
+    - 两者的本质上是利用同一套方法来保证内存可见性的，即`happens before`规则插入内存屏障防止指令重排序，以及刷新内存。
+      - ps：**如果实在不理解这一点，可以仔细阅读《Java并发编程的艺术》第三章内容**。
   - 使用方式不同
     - `synchronized` 可以修饰实例方法（锁住实例对象）、静态方法（锁住类对象）、代码块（显示指定锁对象）。
     - ReentrantLock 显示调用 tryLock 和 lock 方法（在try之前调用），需要在 `finally` 块中释放锁。
