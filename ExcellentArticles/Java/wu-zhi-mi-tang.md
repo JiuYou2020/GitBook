@@ -572,13 +572,13 @@ Java 被称为拥有平台无关性的语言。Java 虚拟机让这个变为可�
 
 但是，**跨平台的是 Java 程序(包括字节码文件)，，而不是 JVM**。JVM 是用 C/C++ 开发的，是编译后的机器码，不能跨平台，不同平台下需要安装不同版本的 JVM 。
 
-![不同平台，不同 JVM](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/5f64c6b9436f6efbe54cfc2d01727301.png)
+![不同平台，不同 JVM](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/5f64c6b9436f6efbe54cfc2d01727301.png)
 
 
 
 ### JVM由哪些部分组成？
 
-![img](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/01.jpg)
+![img](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/01.jpg)
 
 **类加载器**：Java虚拟机设计团队有意把类加载阶段中的“通过一个类的全限定名来获取描述该类的二进制字节流”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需的类。实现这个动作的代码被称为“类加载器”(Class Loader)。
 
@@ -869,7 +869,7 @@ Concurrent Mark Sweep收集器，**获取最短回收停顿时间**
 3. 最终标记：标记原始快照（SATB）记录下的在并发时有引用变动的对象。
 4. 筛选回收
 
-![image-20240421151552370](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/image-20240421151552370.png)
+![image-20240421151552370](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/image-20240421151552370.png)
 
 #### Shenandoah收集器
 
@@ -899,7 +899,7 @@ https://weread.qq.com/web/reader/cf1320d071a1a78ecf19254ka25329702bda2557a7b2ba9
 
   - HotSpot虚拟机的几种收集器有不同的标记实现方案，有的把标记直接记录在对象头上（如Serial收集器），有的把标记记录在与对象相互独立的数据结构上（如G1、Shenandoah使用了一种相当于堆内存的1/64大小的，称为BitMap的结构来记录标记信息），而ZGC的染色指针是最直接的、最纯粹的，**它直接把标记信息记在引用对象的指针上**，这时，与其说可达性分析是遍历对象图来标记对象，还不如说是遍历“引用图”来标记“引用”了。
   - 染色指针是一种直接将少量额外的信息存储在指针上的技术，可是为什么指针本身也可以存储额外信息呢？在64位系统中，理论可以访问的内存高达16EB（2的64次幂）字节。实际上，基于需求（用不到那么多内存）、性能（地址越宽在做地址转换时需要的页表级数越多）和成本（消耗更多晶体管）的考虑，在AMD64架构中只支持到52位(4PB)的地址总线和48位(256TB)的虚拟地址空间，所以目前64位的硬件实际能够支持的最大内存只有256TB。此外，操作系统一侧也还会施加自己的约束，**64位的Linux则分别支持47位(128TB)的进程虚拟地址空间和46位(64TB)的物理地址空间**，64位的Windows系统甚至只支持44位(16TB)的物理地址空间。
-  - 尽管Linux下64位指针的高18位不能用来寻址，但剩余的46位指针所能支持的64TB内存在今天仍然能够充分满足大型服务器的需要。鉴于此，**ZGC的染色指针技术继续盯上了这剩下的46位指针宽度，将其高4位提取出来存储四个标志信息。**通过这些标志位，虚拟机可以直接从指针中看到其引用对象的三色标记状态、是否进入了重分配集（即被移动过）、是否只能通过finalize()方法才能被访问到，如图3-20所示。当然，由于这些标志位进一步压缩了原本就只有46位的地址空间，也直接导致ZGC能够管理的内存不可以超过4TB（2的42次幂)![image-20240421152616011](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/image-20240421152616011.png)
+  - 尽管Linux下64位指针的高18位不能用来寻址，但剩余的46位指针所能支持的64TB内存在今天仍然能够充分满足大型服务器的需要。鉴于此，**ZGC的染色指针技术继续盯上了这剩下的46位指针宽度，将其高4位提取出来存储四个标志信息。**通过这些标志位，虚拟机可以直接从指针中看到其引用对象的三色标记状态、是否进入了重分配集（即被移动过）、是否只能通过finalize()方法才能被访问到，如图3-20所示。当然，由于这些标志位进一步压缩了原本就只有46位的地址空间，也直接导致ZGC能够管理的内存不可以超过4TB（2的42次幂)![image-20240421152616011](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/image-20240421152616011.png)
 
   染色指针的优势：
 
@@ -911,7 +911,7 @@ https://weread.qq.com/web/reader/cf1320d071a1a78ecf19254ka25329702bda2557a7b2ba9
 
 - 并发收集过程：
 
-  ![image-20240421153133854](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/image-20240421153133854.png)
+  ![image-20240421153133854](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/image-20240421153133854.png)
 
   1. **并发标记**，在染色指针上进行
   2. **并发预备重分配**：这个阶段需要根据特定的查询条件统计得出本次收集过程**要清理哪些Region，将这些Region组成重分配集(Relocation Set)**。重分配集与G1收集器的回收集(Collection Set)还是有区别的，ZGC划分Region的目的并非为了像G1那样做收益优先的增量回收。相反，ZGC每次回收都会扫描所有的Region，用范围更大的扫描成本换取省去G1中记忆集的维护成本。因此，ZGC的重分配集只是决定了里面的存活对象会被重新复制到其他的Region中，里面的Region会被释放，而并不能说回收行为就只是针对这个集合里面的Region进行，因为标记过程是针对全堆的。
@@ -964,7 +964,7 @@ Java虚拟机设计团队有意把类加载阶段中的“**通过一个类的�
 
 ### 双亲委派模型是什么？
 
-![image-20240421155525531](/home/jiuyou2020/文档/GitBook/ExcellentArticles/Java/.gitbook/assets/image-20240421155525531.png)
+![image-20240421155525531](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/image-20240421155525531.png)
 
 > 双亲委派模型要求除了顶层的启动类加载器外，其余的类加载器都应有自己的父类加载器。不过这里类加载器之间的父子关系一般不是以继承(Inheritance)的关系来实现的，而是通常使用组合(Composition)关系来复用父加载器的代码。
 
