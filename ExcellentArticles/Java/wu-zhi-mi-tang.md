@@ -984,5 +984,144 @@ Java虚拟机设计团队有意把类加载阶段中的“**通过一个类的�
 
 ## SpringMVC
 
+### DispatcherServlet的工作流程？
+
+![流程示意图](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/01.png)
+
+1. **发送请求**
+
+   用户向服务器发送 HTTP 请求，请求被 Spring MVC 的调度控制器 DispatcherServlet 捕获。
+
+2. **映射处理器**
+
+   DispatcherServlet 根据请求 URL ，调用 HandlerMapping 获得该 Handler 配置的所有相关的对象（包括 **Handler** 对象以及 Handler 对象对应的**拦截器**），最后以 `HandlerExecutionChain` 对象的形式返回。
+
+3. **处理器适配**
+
+   **DispatcherServlet 根据获得的 Handler，选择一个合适的HandlerAdapter 。（附注：如果成功获得 HandlerAdapter 后，此时将开始执行拦截器的 `#preHandler(...)` 方法）。**
+
+   **提取请求 Request 中的模型数据，填充 Handler 入参，开始执行Handler（Controller)。** 在填充Handler的入参过程中，根据你的配置，Spring 将帮你做一些额外的工作：
+
+   - HttpMessageConverter ：会将请求消息（如 JSON、XML 等数据）转换成一个对象。
+   - 数据转换：对请求消息进行数据转换。如 String 转换成 Integer、Double 等。
+   - 数据格式化：对请求消息进行数据格式化。如将字符串转换成格式化数字或格式化日期等。
+   - 数据验证： 验证数据的有效性（长度、格式等），验证结果存储到 BindingResult 或 Error 中。
+
+   **Handler(Controller) 执行完成后，向 DispatcherServlet 返回一个 ModelAndView 对象。**
+
+4. **解析视图**
+
+   根据返回的 ModelAndView ，选择一个适合的 ViewResolver（必须是已经注册到 Spring 容器中的 ViewResolver)，解析出 View 对象，然后返回给 DispatcherServlet。
+
+5. **渲染视图** + **响应请求**
+
+   ViewResolver 结合 Model 和 View，来渲染视图，并写回给用户( 浏览器 )。
+
+> 如果我们的`Controller`类的方法有`@ResponseBody`注解时，会将对象进行转换并直接返回给客户端。
+
+
+
+### SpringMVC常见注解有哪些？
+
+- `@Controller`
+- `@RestController`
+- `@RequestMapping`
+- `@GetMapping`
+- `@PathVariable`
+
+
+
+### 拦截器和过滤器有什么区别？
+
+> 推荐阅读：https://blog.csdn.net/xinzhifu1/article/details/106356958
+
+#### 1、实现原理不同
+
+过滤器和拦截器 底层实现方式大不相同，`过滤器` 是基于函数回调的，`拦截器` 则是基于Java的反射机制（动态代理）实现的。
+
+#### 2、使用范围不同
+
+我们看到过滤器 实现的是 `javax.servlet.Filter` 接口，而这个接口是在`Servlet`规范中定义的，也就是说过滤器`Filter` 的使用要依赖于`Tomcat`等容器，导致它只能在`web`程序中使用。
+
+而拦截器(`Interceptor`) 它是一个`Spring`组件，并由`Spring`容器管理，并不依赖`Tomcat`等容器，是可以单独使用的。不仅能应用在`web`程序中，也可以用于`Application`、`Swing`等程序中。
+
+#### 3、触发时机不同
+
+`过滤器` 和 `拦截器`的触发时机也不同，我们看下边这张图。
+![Filter](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/20200602173814901.png)
+
+过滤器Filter是在请求进入容器后，但在进入servlet之前进行预处理，请求结束是在servlet处理完以后。
+
+拦截器 Interceptor 是在请求进入servlet后，在进入Controller之前进行预处理的，Controller 中渲染了对应的视图之后请求结束。
+
+#### 4、拦截的请求范围不同
+
+过滤器几乎可以对所有进入容器的请求起作用，而拦截器只会对`Controller`中请求或访问`static`目录下的资源请求起作用。
+
+#### 5、控制执行顺序不同
+
+先声明的拦截器 `preHandle()` 方法先执行，而`postHandle()`方法反而会后执行。
+
+#### 6、注入Bean情况不同
+
+`拦截器`加载的时间点在`springcontext`之前,而`过滤器`加载时间在其之后。
+
+
+
+## SpringBoot
+
+### Spring Boot 是什么？
+
+[Spring Boot](https://github.com/spring-projects/spring-boot) 是 Spring 的**子项目**，正如其名字，提供 Spring 的引导( **Boot** )的功能。
+
+通过 Spring Boot ，我们开发者可以快速配置 Spring 项目，引入各种 Spring MVC、Spring Transaction、Spring AOP、MyBatis 等等框架，而**无需不断重复编写繁重的 Spring 配置，降低了 Spring 的使用成本。**
+
+**Spring Boot 提供了各种 Starter 启动器，提供标准化的默认配置。**
+
+
+
+### SpringBoot的优缺点？
+
+优点：使编码、配置、部署变得简单。
+
+缺点：就像Java内存一样，墙里的人想出来，墙外面的人想进去。springboot提供了Bean自动注入的功能，但也正因如此，如果我们想自定义一些Bean时，就可能存在冲突。
+
+
+
+### Spring Boot 中的 Starter 是什么？
+
+Starter **POM** 是一组方便的依赖描述符，我们可以将其引入项目以提供标准化的默认配置。
+
+
+
+### SpringBoot热部署？
+
+或许可以使用`spring-boot-devtools`插件？我也没有试过，我嘛也不知道哇！
+
+
+
+### SpringBoot核心注解？
+
+`@SpringBootApplication`注解，标注在该注解上的注解重要的有以下三个：
+
+1. `@Configuration`：指定类是Bean定义的配置类。
+2. `@ComponentScan`：扫描指定包下的Bean。
+3. `@EnableAutoConfiguration`：打开自动配置的功能。
+   1. Spring Boot 在启动时扫描项目所依赖的 jar 包，寻找包含`spring.factories` 文件的 jar 包。
+   2. 根据 `spring.factories` 配置加载 AutoConfigure 类。
+   3. 根据 `@Conditional` 等条件注解的条件，进行自动配置并将 Bean 注入 Spring IoC 中。
+
+
+
+## Spring
+
+
+
+
+
+
+
+
+
 
 
