@@ -1048,6 +1048,7 @@ Java虚拟机设计团队有意把类加载阶段中的“**通过一个类的�
 #### 3、触发时机不同
 
 `过滤器` 和 `拦截器`的触发时机也不同，我们看下边这张图。
+
 ![Filter](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/20200602173814901.png)
 
 过滤器Filter是在请求进入容器后，但在进入servlet之前进行预处理，请求结束是在servlet处理完以后。
