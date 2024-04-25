@@ -32,13 +32,13 @@ curl -sSL https://www.debuggerx.com/fcitx5_customizer/fcitx5_customizer.sh | bas
 
 默认配置下的 Fcitx5 有一个让很多新手非常困扰的问题，就是当按下键盘上的`[`和`]`时，输入法打出的标点却是`·`和`「`，而不是习惯中的中文方括号`【`和`】`，所以我的优化脚本中提供了一个`优化中文标点`的选项用于修正这个问题。此时如果就是想输入包括`·`和`「`等在内的各种标点，就可以利用快速输入，先按V键，再按标点按键，即可出现各种特殊标点可供选择输入：
 
-![punctuation](file:///home/jiuyou2020/Desktop/gitbook/assets/punctuation.webp?lastModify=1714068499)
+![punctuation](./.gitbook/assets/punctuation.webp)
 
 ### 查看所有的快速输入命令
 
 快速输入的使用方式是，先按键(默认是V键)触发进入快速输入模式，然后输入指令，例如`vfh`就是输入符号，`vsz`就是输入各种样式的数字。 当想要查看所有的快速输入命令时，可以输入`vtsf`(提示符的拼音首字母)，即可看到所有的命令缩写：
 
-![tsf](file:///home/jiuyou2020/Desktop/gitbook/assets/tsf-1714068357711-50.webp?lastModify=1714068499)
+![tsf](./.gitbook/assets/tsf-1714068357711-50.webp)
 
 ### 输入特殊符号
 
@@ -51,47 +51,47 @@ curl -sSL https://www.debuggerx.com/fcitx5_customizer/fcitx5_customizer.sh | bas
 * 直接输入`vzuo`、`vyou`、`vshang`、`vxia`即可输入←、→、↑、↓这几个常用的箭头
 * 输入`vjt`后，选择想要的箭头
 
-![arrow1.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/arrow1.webp?lastModify=1714068499)
+![arrow1.webp](./.gitbook/assets/arrow1.webp)
 
 * 输入`v\`后，选择想要的粗箭头
 
-![arrow2.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/arrow2.webp?lastModify=1714068499)
+![arrow2.webp](./.gitbook/assets/arrow2.webp)
 
 #### 符号
 
 建议先输入`vtsf`查看所有的命令，下面列出几种常用的符号输入
 
-![fh1.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/fh1.webp?lastModify=1714068499)
+![fh1.webp](./.gitbook/assets/fh1.webp)
 
-![fh2.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/fh2.webp?lastModify=1714068499)
+![fh2.webp](./.gitbook/assets/fh2.webp)
 
-![fh3.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/fh3.webp?lastModify=1714068499)
+![fh3.webp](./.gitbook/assets/fh3.webp)
 
-![fh4.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/fh4.webp?lastModify=1714068499)
+![fh4.webp](./.gitbook/assets/fh4.webp)
 
 #### emoji表情
 
 对于常见的emoji表情，可以尝试直接输入拼音，比如`haha`、`xiaoku`、`wuyu`、`ai`、`zhadan`：
 
-![emoji1.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/emoji1.webp?lastModify=1714068499)
+![emoji1.webp](./.gitbook/assets/emoji1.webp)
 
 更多emoji表情，可以尝试输入`v:[emoji的英文名]`输入：
 
-![emoji2.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/emoji2.webp?lastModify=1714068499)
+![emoji2.webp](./.gitbook/assets/emoji2.webp)
 
 ### 时间日期
 
 * 输入当前日期
 
-![rq.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/rq.webp?lastModify=1714068499)
+![rq.webp](./.gitbook/assets/rq.webp)
 
 * 输入当前时间
 
-![sj.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/sj.webp?lastModify=1714068499)
+![sj.webp](./.gitbook/assets/sj.webp)
 
 * 输入当前时间的时间戳/ISO8601格式
 
-![sjc.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/sjc.webp?lastModify=1714068499)
+![sjc.webp](./.gitbook/assets/sjc.webp)
 
 ### 数字转大写金额
 
@@ -99,13 +99,13 @@ curl -sSL https://www.debuggerx.com/fcitx5_customizer/fcitx5_customizer.sh | bas
 
 使用方法是`vdx[数字]`，例如整数：
 
-![dx1.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/dx1.webp?lastModify=1714068499)
+![dx1.webp](./.gitbook/assets/dx1.webp)
 
-![dx2.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/dx2.webp?lastModify=1714068499)
+![dx2.webp](./.gitbook/assets/dx2.webp)
 
 也支持小数：
 
-![dx3.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/dx3.webp?lastModify=1714068499)
+![dx3.webp](./.gitbook/assets/dx3.webp)
 
 ## 一些说明
 
@@ -173,31 +173,31 @@ rm ~/.local/share/fcitx5/addon/uppercase_dis_ime.conf
 
 * 星空黑(我转换并修正的一个搜狗皮肤，原地址：[https://pinyin.sogou.com/skins/detail/view/info/526130](https://pinyin.sogou.com/skins/detail/view/info/526130))
 
-![sky\_black.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/sky\_black.webp?lastModify=1714068499)
+![sky\_black.webp](file:///home/jiuyou2020/Desktop/.gitbook/assets/sky\_black.webp?lastModify=1714068499)
 
 * breeze(原地址：[https://github.com/scratch-er/fcitx5-breeze](https://github.com/scratch-er/fcitx5-breeze))
 
-![breeze.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/breeze.webp?lastModify=1714068499)
+![breeze.webp](./.gitbook/assets/breeze.webp)
 
 * material-color(原地址：[https://github.com/hosxy/Fcitx5-Material-Color](https://github.com/hosxy/Fcitx5-Material-Color))
 
-![material.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/material.webp?lastModify=1714068499)
+![material.webp](./.gitbook/assets/material.webp)
 
 * nord(原地址：[https://github.com/tonyfettes/fcitx5-nord](https://github.com/tonyfettes/fcitx5-nord))
 
-![nord.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/nord.webp?lastModify=1714068499)
+![nord.webp](./.gitbook/assets/nord.webp)
 
 * solarized(原地址：[https://github.com/mingyech/fcitx5-solarized](https://github.com/mingyech/fcitx5-solarized))
 
-![solarized.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/solarized.webp?lastModify=1714068499)
+![solarized.webp](./.gitbook/assets/solarized.webp)
 
 * 简约黑/白(Maicss专为深度制作的主题，原地址：[https://bbs.deepin.org/post/223743](https://bbs.deepin.org/post/223743))
 
-![simple-black.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/simple-black.webp?lastModify=1714068499)
+![simple-black.webp](./.gitbook/assets/simple-black.webp)
 
 * dracula(drbbr制作的德古拉主题，原地址：[https://github.com/drbbr/fcitx5-dracula-theme](https://github.com/drbbr/fcitx5-dracula-theme))
 
-![dracula.webp](file:///home/jiuyou2020/Desktop/gitbook/assets/dracula.webp?lastModify=1714068499)
+![dracula.webp](./.gitbook/assets/dracula.webp)
 
 ### 可能遇到的问题
 
