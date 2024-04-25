@@ -1126,7 +1126,7 @@ Starter **POM** 是一组方便的依赖描述符，我们可以将其引入项�
 
 ### Spring Framwork核心模块？
 
-![Spring Framework](./.gitbook/assets/01-1714030975905-1.jpg)
+![Spring Framework](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/01-1714030975905-1.jpg)
 
 **Core Container**
 
@@ -1351,7 +1351,7 @@ Spring Bean 的**销毁**流程如下：
 
 
 
-![流程图](./.gitbook/assets/08.png)
+![流程图](https://raw.githubusercontent.com/JiuYou2020/GitBook/master/ExcellentArticles/Java/.gitbook/assets/08.png)
 
 
 
