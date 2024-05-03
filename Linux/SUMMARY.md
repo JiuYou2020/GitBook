@@ -5,3 +5,4 @@
 * [User Privileges](user-privileges.md)
 * [Fcitx5](fcitx5.md)
 * [Strange Issues](strange-issues.md)
+* [python3](python3.md)
