@@ -1192,29 +1192,57 @@ Starter **POM** 是一组方便的依赖描述符，我们可以将其引入项�
 
 ### 什么是Spring IoC容器？
 
-Spring 框架的核心是 Spring IoC 容器。容器创建 Bean 对象，将它们装配在一起，配置它们并管理它们的完整生命周期。
+`org.springframework.context.ApplicationContext` 接口代表 Spring IoC 容器，负责实例化、配置和组装 bean。
 
-- Spring 容器使用**依赖注入**来管理组成应用程序的 Bean 对象。
-- 容器通过读取提供的**配置元数据** Bean Definition 来接收对象进行实例化，配置和组装的指令。
-- 该配置元数据 Bean Definition 可以通过 XML，Java 注解或 Java Config 代码**提供**。
+- 容器通过读取**[配置元数据](# 什么是配置元数据？)**来获取要实例化、配置和组装哪些对象的指令。
 
-> 例如，OpenFeign是流行的RPC框架，在它的源码里就是通过自定义客户端代理接口（配置元数据）的方式将代理类放入IoC容器中，从而在标注`@FeignClient`注解的地方可以看到注册的Bean。
+> 例如，OpenFeign是流行的RPC框架，在它的源码里就是通过自定义客户端代理接口配置元数据，再由IoC容器进行组装，从而在标注`@FeignClient`注解的地方可以看到注册的Bean。
 
 
+
+### 什么是配置元数据？
+
+配置元数据表示开发者告诉Spring Container如何去实例化、配置和组装应用程序中的对象。
+
+Spring容器写入配置元数据有以下几种方式：
+
+1. 基于XML
+2. 基于注解，例如@Service
+3. 基于java configuration，例如@Configuration、@Bean、@Import
 
 ### IoC和DI有什么区别？
 
 IoC是目的，DI是手段。
 
-- IoC控制反转，是指将用户创建对象的权利（例如通过传统方式new）交给容器，由容器去创建和管理对象。
-- 而DI是具体的实现手段，程序运行过程中，若需要调用另一个对象协助时，无须在代码中创建被调用者，而是依赖于外部容器，由外部容器创建后传递给程序。依赖注入是目前最优秀的**解耦**方式。依赖注入让Spring的Bean之间以**配置文件（XML，Java注解、Java Config）**的方式组织在一起，而不是以硬编码的方式耦合在一起的。
+- IoC控制反转，是指将用户创建对象的权利（例如通过传统方式new等硬编码方式）交给容器，由容器去创建和管理对象。
 
-> 还是以Openfeign为例，它有一个方法`org.springframework.cloud.openfeign.FeignClientsRegistrar#eagerlyRegisterFeignClientBeanDefinition`,在这里，就是通过配置元数据，定义Bean Definition，将Bean注入IoC容器。关键代码如下：
+- DI是IoC的一种特殊形式，对象仅通过构造函数参数、工厂方法参数或在对象实例上设置的属性来**定义其依赖关系（XML，Java注解、Java配置）**，由工厂方法构造或返回。之后，IoC容器在创建bean时注入这些依赖项。
+
+  程序运行过程中，若需要调用另一个对象协助时，无须在代码中创建被调用者，而是依赖于外部容器，由外部容器创建后传递给程序。依赖注入是目前最优秀的**解耦**方式。
+
+  
+
+> 还是以Openfeign为例，它有一个方法`org.springframework.cloud.openfeign.FeignClientsRegistrar#eagerlyRegisterFeignClientBeanDefinition`,在这里，就是通过配置元数据，定义Bean Definition，再由容器创建管理该Bean。关键代码如下：
 >
 > ```java
 > BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, qualifiers);
 > BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 > ```
+
+
+
+### 依赖注入的两种方式？
+
+- 基于构造函数的DI
+- 基于Setter的DI
+
+`ApplicationContext` 支持其管理的 bean 的基于构造函数和基于 setter 的 DI。**在通过构造函数方法注入一些依赖项后，它还支持基于 setter 的 DI。**您可以以 `BeanDefinition` 的形式配置依赖项，将其与 `PropertyEditor` 实例结合使用，将属性从一种格式转换为另一种格式。然而，大多数 Spring 用户并不直接使用这些类（即以编程方式），而是使用 XML `bean` 定义、带注释的组件（即用 `@Component` 、 `@Controller` 等），或基于 Java 的 `@Configuration` 类中的 `@Bean` 方法。然后，这些源在内部转换为 `BeanDefinition` 的实例，并用于加载整个 Spring IoC 容器实例。
+
+
+
+### 预实例化单例bean？
+
+**Spring框架在容器加载时能够检测到一些配置问题，比如引用了不存在的Bean或存在循环依赖。**Spring会在实际创建Bean时设置属性和解析依赖，因此当请求对象时，如果创建对象或其依赖存在问题，可能会生成异常。**为了及早发现这些配置问题**，默认情况下ApplicationContext实现会提前实例化单例Bean，以便在创建ApplicationContext时就发现配置问题。但你仍然可以覆盖这种默认行为，使得单例Bean延迟初始化，而不是在实际需要时提前创建。
 
 
 
@@ -1226,6 +1254,10 @@ IoC是目的，DI是手段。
 | 它使用语法显式提供资源对象 | 它自己创建和管理资源对象 |
 | 不支持国际化               | 支持国际化               |
 | 不支持基于依赖的注解       | 支持基于依赖的注解       |
+
+BeanFactory接口能够管理任何类型对象的高级配置机制。而ApplicationContext是BeanFactory的子接口。
+
+**简而言之， `BeanFactory` 提供了配置框架和基本功能， `ApplicationContext` 添加了更多企业特定的功能。** 
 
 另外，BeanFactory 也被称为**低级**容器，而 ApplicationContext 被称为**高级**容器。
 
@@ -1294,6 +1326,17 @@ class Client {
 
 
 
+### Bean的定义是什么？
+
+在spring中，[Bean](https://docs.spring.io/spring-framework/reference/core/beans/definition.html)是由Spring IoC容器实例化、组装和管理的对象，换而言之，Bean只是应用程序中的众多对象之一。**Bean以及它们之间的依赖关系在容器使用的配置元数据中得到反映**。
+
+在容器内，这些Bean定义表示为BeanDefinition对象，其中包括以下元数据：
+
+- 包限定类名：通常是Bean的实际实现类
+- Bean行为配置元素：说明Bean中容器中的行为方式（范围、生命周期回调等）
+- 对Bean完成其工作所需的其他Bean的引用。
+- 在新创建的对象中设置的其它配置参数，举例来说，如果你在Spring中创建了一个用于管理数据库连接池的bean，你可能需要设置一些配置参数，比如连接池的最大大小、最小大小、空闲连接超时时间等。
+
 ### 定义Bean的几种方式？
 
 1. XML配置文件
@@ -1301,7 +1344,11 @@ class Client {
 3. Java Config配置（@Bean）
 4. 自定义Bean Definition（多在框架中使用，一般的crud根本用不到。。。）
 
-
+> 关于第4点的补充：
+>
+> 除了包含有关如何创建特定 bean 的信息的 bean 定义之外， **`ApplicationContext` 还允许注册在容器外部（由用户）创建的现有对象**。这是通过 `getBeanFactory()` 方法访问 ApplicationContext 的 `BeanFactory` 来完成的，该方法返回 `DefaultListableBeanFactory` 实现。 `DefaultListableBeanFactory` 通过 `registerSingleton(..)` 和 `registerBeanDefinition(..)` 方法支持此注册。**然而，典型的应用程序仅使用通过常规 bean 定义元数据定义的 bean。**
+>
+> Bean 元数据和手动提供的单例实例需要尽早注册，以便容器在自动装配和其他自省步骤期间正确推理它们。
 
 
 
@@ -1362,9 +1409,38 @@ Spring Bean 的**销毁**流程如下：
 
 
 
+### 方法注入是什么？
 
+在大多数应用场景中，容器中的大部分bean都是单例的。当一个单例 bean 需要与另一个单例 bean 协作或一个非单例 bean 需要与另一个非单例 bean 协作时，通常可以通过将一个 bean 定义为另一个 bean 的属性来处理依赖关系。当 bean 生命周期不同时就会出现问题。假设单例 bean A 需要使用非单例（原型）bean B，可能是在 A 上的每次方法调用上。容器仅创建单例 bean A 一次，因此只有一次设置属性的机会。**每次需要 bean B 时，容器无法为 bean A 提供新的 bean B 实例。**
 
+**在Spring中，方法注入（Method Injection）是一种依赖注入的方式，允许你在每次方法调用时动态地提供一个依赖对象。**这对于解决上述提到的问题非常有用，其中一个单例Bean需要与一个非单例Bean协作，但需要在每次方法调用时获得一个新的非单例Bean实例。
 
+**方法注入可以通过在目标Bean中定义一个方法，该方法的参数类型是所需的依赖对象，然后由Spring容器动态调用该方法来注入依赖对象。**
+
+```java
+@Component
+public class SingletonA {
+
+    public void someMethod() {
+        // 调用方法获取新的PrototypeB实例
+        PrototypeB prototypeB = getPrototypeB();
+        // 使用prototypeB进行一些操作
+    }
+
+    // 使用方法注入获取PrototypeB实例
+    @Lookup
+    protected PrototypeB getPrototypeB() {
+        // Spring会在运行时动态生成子类来覆盖该方法，并提供所需的PrototypeB实例
+        // do something...
+        return ...;
+    }
+}
+@Component
+@Scope("prototype")
+public class PrototypeB {
+    // PrototypeB的一些属性和方法
+}
+```
 
 
 
