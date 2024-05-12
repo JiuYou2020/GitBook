@@ -1,8 +1,10 @@
 ---
-description: 下载配置jdk和maven
+description: 下载配置jdk、maven以及gradle
 ---
 
-# JDK & MAVEN
+# JDK & MAVEN & GRADLE
+
+### 安装JDK
 
 全局卸载jdk
 
@@ -68,7 +70,40 @@ sudo update-alternatives --config java
 
 
 
+### 安装gradle
 
+> 如果你的idea或者其他ide已经开始自动下载wrapper,请尝试先删除\~/.gradle文件夹，重新开始配置，不然可能出现一些奇奇怪怪的bug
 
+1. 下载zip
 
+```bash
+mkdir /opt/gradle
+cd /opt/gradle
+wget https://services.gradle.org/distributions/gradle-8.7-bin.zip
+unzip gradle-8.7-bin.zip
+```
 
+2. 配置环境变量
+
+```bash
+echo "export PATH=$PATH:/opt/gradle/gradle-8.7/bin" >> ~/.bashrc
+source ~/.bashrc
+```
+
+3. 配置国内镜像：在`/opt/gradle/gradle-8.7/init.d` 目录下新建`build.gradle` 为什么建请阅读该目录下的`readme`&#x20;
+4. 打开[阿里云仓库](https://developer.aliyun.com/mvn/guide)
+5. 将以下内容复制进入`build.gradle`&#x20;
+
+```gradle
+allprojects {
+  repositories {
+    maven {
+      url 'https://maven.aliyun.com/repository/public/'
+    }
+    mavenLocal()
+    mavenCentral()
+  }
+}
+```
+
+6. 结束
