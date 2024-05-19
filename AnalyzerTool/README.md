@@ -10,13 +10,13 @@ description: 与MAT相关的一些说明,使用方法等...
 
 > 以上述文件进行说明
 
-<figure><img src=".gitbook/assets/image.png" alt=""><figcaption><p>概览图</p></figcaption></figure>
+<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption><p>概览图</p></figcaption></figure>
 
 * 饼状图: 展示最大的几个对象所占内存的比例
 * `Histogram`: 列出内存中每个对象的名字,数量和大小
 * `Dominator Tree`: 将内存中所有对象按大小进行排序,并且可以分析对象之间的引用结构
 
-<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption><p>Dominator Tree图</p></figcaption></figure>
+<figure><img src=".gitbook/assets/image (1) (1).png" alt=""><figcaption><p>Dominator Tree图</p></figcaption></figure>
 
 > 内存最大的对象也是最应该去怀疑的
 
