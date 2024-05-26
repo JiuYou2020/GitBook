@@ -17,3 +17,7 @@ description: 与java相关的一些优秀文章
 [redis三种集群模式](https://zhuanlan.zhihu.com/p/680612053)
 
 [自定义注册Spring Bean的两种方法](https://www.jianshu.com/p/1ca5290cc9f1)
+
+[Spring AOP原理](https://segmentfault.com/a/1190000007469968)
+
+[Spring AOP实战](https://segmentfault.com/a/1190000007469982)
