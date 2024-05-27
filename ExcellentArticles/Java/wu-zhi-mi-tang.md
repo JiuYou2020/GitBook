@@ -1592,3 +1592,4 @@ public interface AbstractTransactionStatus{
     boolean isCompleted; 			// 是否已完成
 }
 ```
+
