@@ -1653,3 +1653,4 @@ public interface AbstractTransactionStatus{
 
 ### 缓存与DB的一致性如何保证？
 
+详见[Cache与DB的数据一致性](./cache-yu-db-de-shu-ju-yi-zhi-xing)
