@@ -1,5 +1,5 @@
 ---
-description: 《设计模式的艺术》一书学到的内容
+description: 关于《设计模式的艺术》一书的读书笔记
 ---
 
 # [设计模式的艺术](https://github.com/JiuYou2020/ReadingBook)
