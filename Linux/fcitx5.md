@@ -2,6 +2,8 @@
 description: 关于fcitx5的一些自定义
 ---
 
+> 好了，经总结，还是别自己折腾了，还是企业做的输入法毕竟好用，比如搜狗输入法…
+
 # Fcitx5
 
 > 转载自：[https://www.debuggerx.com/2023/09/20/fcitx5-customizer/](https://www.debuggerx.com/2023/09/20/fcitx5-customizer/)
