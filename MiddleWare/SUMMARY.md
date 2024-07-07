@@ -5,3 +5,5 @@
 * [Nginx-动态缓存与过滤](nginx-dong-tai-huan-cun-yu-guo-l.md)
 * [Nginx-常见配置](nginx-chang-jian-pei-zhi.md)
 * [SkyWalking-QuickStart](skywalking-quickstart.md)
+* [Zookeeper-QuickStart](zookeeper-quickstart.md)
+* [Kafka-QuickStart](kafka-quickstart.md)
