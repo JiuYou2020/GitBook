@@ -21,3 +21,5 @@ description: 与java相关的一些优秀文章
 [Spring AOP原理](https://segmentfault.com/a/1190000007469968)
 
 [Spring AOP实战](https://segmentfault.com/a/1190000007469982)
+
+与`Mycat`和`Sharding JDBC` 相关请查看[博客](http://t.csdnimg.cn/1HCDc)

@@ -14,6 +14,10 @@ sudo chown -R jiuyou2020:jiuyou2020 home
 
 给文件添加指定用户的权限
 
+```shell
+sudo chmod -R 755 /file_path
+```
+
 ```bash
 sudo setfacl -m u:jiuyou2020:rwx test/
 ```
