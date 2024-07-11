@@ -333,6 +333,8 @@ OAuth（开放授权）是一种开放标准，允许用户通过第三方服务
 
 推荐阅读原文：https://weread.qq.com/web/reader/948326f0813ab7294g014bb7k3c5327902153c59dc0488e1
 
+架构设计地址：https://buxinwanins.feishu.cn/wiki/wikcnU5kJ3RzMzxK3DZvAXyqzmg
+
 ### 设计初衷
 
 领域驱动设计（DDD）旨在通过领域专家和技术团队的协作，将复杂的业务需求转化为清晰的架构设计，并最终实现代码。其主要初衷包括：

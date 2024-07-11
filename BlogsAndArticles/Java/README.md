@@ -22,4 +22,6 @@ description: 与java相关的一些优秀文章
 
 [Spring AOP实战](https://segmentfault.com/a/1190000007469982)
 
-与`Mycat`和`Sharding JDBC` 相关请查看[博客](http://t.csdnimg.cn/1HCDc)
+[分库分表](http://t.csdnimg.cn/1HCDc)
+
+[如何动态设置线程池参数](https://mp.weixin.qq.com/s?__biz=Mzg3NjU3NTkwMQ==&mid=2247505103&idx=1&sn=a041dbec689cec4f1bbc99220baa7219&source=41#wechat_redirect)

@@ -2312,7 +2312,7 @@ String、List、Set、Zset、Hash
 
 3种特殊数据结构：
 
-HyperLogLogs（基数统计）、Bitmap （位存储）、Geospatial (地理位置)
+HyperLogLog（基数统计）、Bitmap （位存储）、Geospatial (地理位置)
 
 * [Redis 3 种特殊数据结构详解](https://javaguide.cn/database/redis/redis-data-structures-02.html)
 
