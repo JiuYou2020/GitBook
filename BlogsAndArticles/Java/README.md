@@ -25,3 +25,5 @@ description: 与java相关的一些优秀文章
 [分库分表](http://t.csdnimg.cn/1HCDc)
 
 [如何动态设置线程池参数](https://mp.weixin.qq.com/s?__biz=Mzg3NjU3NTkwMQ==&mid=2247505103&idx=1&sn=a041dbec689cec4f1bbc99220baa7219&source=41#wechat_redirect)
+
+[如何实现订单延时过期](https://developer.aliyun.com/article/1393395)

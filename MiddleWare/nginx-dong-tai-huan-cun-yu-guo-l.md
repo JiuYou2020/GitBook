@@ -99,6 +99,7 @@ location ~ ^/userid(\d+)$ {
 >
 > 1. 将`ngx_http_lua_module`源码添加到nginx源码并重新编译以获取对`lua`语言的支持（本文不做介绍）
 > 2. 利用`OpenResty`支持`lua`语言，[官网](https://openresty.org/cn/) 
+> 3. [docker安装OpenResty](https://blog.csdn.net/weixin_44606481/article/details/131818345)
 
 ## 安装OpenResty
 

@@ -995,7 +995,7 @@ Java虚拟机设计团队有意把类加载阶段中的“**通过一个类的�
 
 通过 Spring Boot ，我们开发者可以快速配置 Spring 项目，引入各种 Spring MVC、Spring Transaction、Spring AOP、MyBatis 等等框架，而**无需不断重复编写繁重的 Spring 配置，降低了 Spring 的使用成本。**
 
-**Spring Boot 提供了各种 Starter 启动器，提供标准化的默认配置。**
+**Spring Boot 提供了各种 Starter 启动器 ，提供标准化的默认配置。**
 
 ### SpringBoot的优缺点？
 
@@ -1574,6 +1574,34 @@ public interface AbstractTransactionStatus{
     boolean isCompleted;    // 是否已完成
 }
 ```
+
+### @autowire和@resource的区别
+
+@Autowired和@Resource都是用于依赖注入的注解，但它们有一些重要的区别。让我为您详细解释：
+
+1. 来源
+   - @Autowired是Spring框架提供的注解
+   - @Resource是Java EE（现在的Jakarta EE）提供的注解，位于javax.annotation包下
+2. 注入方式
+   - @Autowired默认按类型（by type）装配依赖对象
+   - @Resource默认按名称（by name）装配依赖对象，如果找不到匹配的bean名称，则回退到按类型装配
+3. 属性
+   - @Autowired有一个required属性，默认为true，表示依赖对象必须存在
+   - @Resource有name和type属性，可以精确指定注入的bean的名称或类型
+4. 匹配顺序
+   - @Autowired首先按类型匹配，如果找到多个bean，则按属性名称匹配
+   - @Resource首先按名称匹配，如果找不到匹配的bean名称，则按类型匹配
+5. 使用范围
+   - @Autowired可以用于构造方法、setter方法、属性和方法参数
+   - @Resource主要用于属性和setter方法
+6. 附加功能
+   - @Autowired可以与@Qualifier注解配合使用，进一步指定要装配的bean
+   - @Resource可以独立完成bean的指定
+7. 兼容性
+   - @Autowired是Spring特定的注解，与Spring框架耦合度高
+   - @Resource是Java标准注解，具有更好的兼容性和可移植性
+
+
 
 ## 缓存
 

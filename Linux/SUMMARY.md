@@ -7,3 +7,5 @@
 * [Strange Issues](strange-issues.md)
 * [python3](python3.md)
 * [nvm in linux](nvm-in-linux.md)
+* [Blogs About Linux](blogs.md)
+* [WSL proxy](wsl-proxy.md)
