@@ -306,11 +306,15 @@ OAuth（开放授权）是一种开放标准，允许用户通过第三方服务
 
         > 上述工作应该加锁，在一次事务中完成
 
-    同时使用canal同步缓存与MySQL，执行lua脚本刷新点赞记录，先检查key是否存在
+    ==补充：为什么需要加锁，如果用户连续点击两次，两个请求就有可能在同一时间到达，那么如果不加锁，可能都发现数据库中没有数据，都向数据库中插入数据，此时就可能插入两次数据，导致错误==
 
+    ==但是如果加了锁，比如使用Redis实现的分布式锁，锁的内容是用户Id+作品Id，用户在进入之前先去判断一下是否加了锁，如果没有，才能申请锁并进入下一步，这也解决了这个问题==
+    
+    同时使用canal同步缓存与MySQL，执行lua脚本刷新点赞记录，先检查key是否存在
+    
     * 如果不存在，结束
     * 如果存在，则zadd，再检查zset长度，如果超出长度，则删除多余元素。
-
+    
     ```mermaid
     graph TD;
         A[查询点赞记录] --> B[加锁事务]
@@ -334,9 +338,19 @@ OAuth（开放授权）是一种开放标准，允许用户通过第三方服务
         R -->|超出长度| S[删除多余元素]
     
     ```
-
+    
     > 目前是这样设计的，当然，如果这样设计，mysql的磁盘io会面临很大的考验，但考虑到目前用户量不大，因此没有做出改进，但是我也看过更进一步的设计，就是在应用层和数据层之间加上一层消息队列以作削峰填谷的处理。
     
+
+==解决了什么样的一致性问题？==
+
+问题：当应用程序更新数据库后，缓存中的数据可能还未更新，导致读取到旧数据。
+
+Canal解决：通过实时捕获数据库的变更，可以及时更新缓存，保持缓存与数据库的一致性。
+
+问题：在传统的主从复制中，可能存在复制延迟，导致从库数据不是最新的。
+
+Canal解决：通过直接解析binlog，可以更快速地获取数据变更，减少延迟。
 
 ### 补充
 
@@ -620,3 +634,90 @@ OAuth（开放授权）是一种开放标准，允许用户通过第三方服务
 **例子**
 
 ![image-20240630193613737](.gitbook/assets/image-20240630193613737.png)
+
+
+
+
+
+## RPC框架
+
+您的回答已经很好地解释了粘包问题的原因。我可以帮您进一步完善这个回答，添加一些具体的解决方案和实现细节。以下是完善后的回答：
+
+Netty发送数据如何解决粘包问题？
+
+粘包和拆包问题是在使用TCP协议进行网络通信时常见的问题。要理解如何解决，首先需要明确问题的产生原因：
+
+- **粘包**：发送端在短时间内连续发送了多个数据包，由于TCP协议的流特性，多个数据包可能会被合并成一个数据包发送到接收端，接收端一次性读取了多个数据包。
+- **拆包**：发送端发送的一个数据包过大，接收端由于缓冲区大小限制，需要分多次读取才能接收到完整的数据包。
+
+Netty提供了多种解决方案来处理粘包和拆包问题，主要通过使用自定义编解码器来实现。这些编解码器将数据包按照指定的格式进行封装和解析，从而解决粘包和拆包问题。以下是几种常用的解决方案：
+
+1. **定长消息**
+   使用FixedLengthFrameDecoder，将消息划分为固定长度的帧。
+
+2. **分隔符**
+   使用DelimiterBasedFrameDecoder，通过特定的分隔符来划分消息。
+
+3. **长度字段 + 消息内容**
+   使用LengthFieldBasedFrameDecoder，在消息头部添加长度字段，用于指示消息体的长度。
+
+4. **自定义协议**
+   实现自定义的编解码器，例如继承ByteToMessageDecoder和MessageToByteEncoder。
+
+下面是一个使用长度字段 + 消息内容方式的简单示例：
+
+
+
+```java
+// 自定义协议
+public class CustomProtocol {
+    private int length;
+    private byte[] content;
+
+    // 构造方法、getter和setter省略
+}
+
+// 编码器
+public class CustomProtocolEncoder extends MessageToByteEncoder<CustomProtocol> {
+    @Override
+    protected void encode(ChannelHandlerContext ctx, CustomProtocol msg, ByteBuf out) throws Exception {
+        out.writeInt(msg.getLength());
+        out.writeBytes(msg.getContent());
+    }
+}
+
+// 解码器
+public class CustomProtocolDecoder extends ByteToMessageDecoder {
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        if (in.readableBytes() < 4) {
+            return;
+        }
+        in.markReaderIndex();
+        int length = in.readInt();
+        if (in.readableBytes() < length) {
+            in.resetReaderIndex();
+            return;
+        }
+        byte[] content = new byte[length];
+        in.readBytes(content);
+        out.add(new CustomProtocol(length, content));
+    }
+}
+
+// 在ChannelPipeline中添加编解码器
+ch.pipeline().addLast(new CustomProtocolDecoder());
+ch.pipeline().addLast(new CustomProtocolEncoder());
+
+```
+
+在这个示例中：
+
+1. 我们定义了一个自定义协议CustomProtocol，包含长度字段和内容字段。
+2. CustomProtocolEncoder负责将CustomProtocol对象编码为字节流，首先写入长度，然后写入内容。
+3. CustomProtocolDecoder负责将字节流解码为CustomProtocol对象，首先读取长度，然后根据长度读取内容。
+4. 在Netty的ChannelPipeline中添加这两个编解码器。
+
+通过使用这种自定义协议和相应的编解码器，我们可以有效地解决粘包和拆包问题。编码器确保每个消息都有正确的格式，而解码器则能够准确地识别和提取每个独立的消息，即使多个消息被合并在一起传输。
+
+总结来说，Netty通过提供灵活的编解码器机制，使得开发者可以根据具体需求选择或实现适当的解决方案，有效地处理网络通信中的粘包和拆包问题，确保数据的完整性和正确性。
